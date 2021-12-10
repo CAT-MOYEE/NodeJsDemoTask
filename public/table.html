@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--定义相关文件引用-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!--    JQuery包引入-->
+    <script src="javascripts/jquery-3.6.0.js"></script>
+
+    <!--    CSS样式引入-->
+    <link rel="stylesheet" href="stylesheets/ajax.css"/>
+
+    <!--    Ajax 及事件绑定-->
+    <script>
+        $(function () {
+            $("#button").click(function () {
+                console.log("按钮被执行了")
+                $.ajax({
+                    url: "/upload",
+                    method: "get",
+                    data: {
+                        input: $("#input").val()
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        $("#input").val('')
+                        alert("输入框输入了" + response.input);
+                    }
+                })
+            })
+
+            //查找数据库全部内容
+            $("#sql").click(function () {
+                console.log("数据库按钮被执行了")
+                $.ajax({
+                    url: "/selectSql",
+                    method: "get",
+                    data: {},
+                    dataType: "json",
+                    success: function (response) {
+                        alert("成功");
+                    }
+                })
+            })
+
+            //生成数据库表格函数
+            function find(){
+                $.ajax({
+                    type: "get",
+                    url:"/makeTab",
+                    data:{},
+                    success:function (data){
+                        console.log("返回成功")
+                        var html = "";
+                        html += "<table>"
+                        html += "<tr></tr>"
+                        html += "<th>用户ID</th>"
+                        html += "<th>密码</th>"
+                        html += "<th>年龄</th>"
+                        html += "<th>名字</th>"
+                        html += "<tr></tr>"
+                        for (let i = 0; i < data.length; i++) {
+                            html += "<tr>";
+                            html += "<td>"+data[i].uid+"</td>>"
+                            html += "<td>"+data[i].upwd+"</td>>"
+                            html += "<td>"+data[i].uage+"</td>>"
+                            html += "<td>"+data[i].uname+"</td>>"
+                            html += "</tr>";
+                        }
+                        html += "</table>"
+                        $("#table").html(html);
+                    }
+                })
+            }
+
+            //创建表格
+            $("#makeTab").click(
+                function (){
+                    find();
+                }
+            )
+
+            //向数据库插入数据
+            $("#insert").click(function () {
+                console.log("正在执行插入数据库语句")
+                const test = $("#inuid").val();
+                if(test==null){
+                    alert("ID一栏不能为空")
+                }else {
+                    $.ajax({
+                        url: "/insert",
+                        method: "get",
+                        data: {
+                            uid: $("#inuid").val(),
+                            upwd:$("#inupwd").val(),
+                            uage:$("#inuage").val(),
+                            uname:$("#inuname").val()
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            find();
+                            $("#inuid").val('')
+                            $("#inupwd").val('')
+                            $("#inuage").val('')
+                            $("#inuname").val('')
+                            alert("完成");
+                        }
+                    })
+                }
+            })
+
+            //根据UID删除数据
+            $("#del").click(function () {
+                console.log("正在执行删除数据库语句");
+                const test = $("#deluid").val();
+                if(test==null) {
+                    alert("ID一栏不能为空")
+                }else {
+                    $.ajax({
+                        url: "/del",
+                        method: "get",
+                        data: {
+                            uid: $("#deluid").val(),
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            find();
+                            $("#deluid").val('')
+                            alert("完成");
+                        }
+                    })
+                }
+            })
+
+            //根据uid进行数据修改
+            $("#change").click(function () {
+                console.log("正在执行修改数据库语句");
+                const test = $("#chuid").val();
+                if(test==null) {
+                    alert("ID一栏不能为空")
+                }else {
+                    $.ajax({
+                        url: "/change",
+                        method: "get",
+                        data: {
+                            uid: $("#chuid").val(),
+                            upwd:$("#chupwd").val(),
+                            uage:$("#chuage").val(),
+                            uname:$("#chuname").val()
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            find();
+                            $("#chuid").val('')
+                            $("#chupwd").val('')
+                            $("#chuage").val('')
+                            $("#chuname").val('')
+                            alert("完成");
+                        }
+                    })
+                }
+            })
+        })
+    </script>
+</head>
+
+
+
+<body>
+<div id="all">
+
+    <div id="title">
+        数据库DEMO
+    </div>
+
+    <!--用于生成表格的DIV-->
+    <div id="table"></div>
+
+    <div id="right">
+        <!--前后端传值测试、基本测试控件-->
+        <div id="test">
+            <input type="text"  id="input" autocomplete="off"/>
+            <input type="button"  value="传值测试" id="button" autocomplete="off"/>
+            <input type="button"  value="数据库" id="sql" autocomplete="off"/>
+            <input type="button"  value="生成表格" id="makeTab" autocomplete="off"/>
+        </div>
+
+        <!--数据库插入区域-->
+        <div id="insertdiv">
+            <span>用户ID</span>
+            <input type="text"  id="inuid" autocomplete="off"/>
+            <span>密码</span>
+            <input type="text" id="inupwd" autocomplete="off"/>
+            <span>年龄</span>
+            <input type="text" id="inuage" autocomplete="off"/>
+            <span>名字</span>
+            <input type="text" id="inuname" autocomplete="off"/>
+            <input type="button"  style="width: 300px;float: right;background-color: #87CEEB;" value="插入数据" id="insert" autocomplete="off"/>
+        </div>
+
+        <!--数据库删除区域-->
+        <div id="deldiv">
+            <span>用户ID</span>
+            <input type="text"  id="deluid" autocomplete="off"/>
+            <input type="button" style="width: 300px;float: right;background-color: #87CEEB;" value="根据ID删除数据" id="del" autocomplete="off"/>
+        </div>
+
+        <!--数据库修改区域-->
+        <div id="changediv">
+            <span>用户ID</span>
+            <input type="text"  id="chuid" autocomplete="off"/>
+            <span>密码</span>
+            <input type="text"  id="chupwd" autocomplete="off"/>
+            <span>年龄</span>
+            <input type="text"  id="chuage" autocomplete="off"/>
+            <span>名字</span>
+            <input type="text"  id="chuname" autocomplete="off"/>
+            <input type="button"   style="width: 300px;float: right;background-color: #87CEEB;" value="根据uid修改数据" id="change" autocomplete="off"/>
+        </div>
+    </div>
+</div>
+</body>
+</html>
