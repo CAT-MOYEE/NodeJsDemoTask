@@ -5,7 +5,7 @@ app.route()函数，创建可链接的途径处理程序的路由路径。
 
 // app.route('/users')
 //     .get(function(req, res, next) {})
-//     .post(function(req, res, next) {})
+//     .post(function(req, res, next) {}）
 
 /*
 express.Router类，创建模块化安装路径的处理程序。
